@@ -60,7 +60,7 @@ ROOT_URLCONF = 'app.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        "DIRS": ["app/templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -148,6 +148,6 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_BEAT_SCHEDULE = {
     'check-lives-every-minute': {
         'task': 'automations.tasks.scheduler_beat',
-        'schedule': 60.0, # Roda a cada 60 segundos
+        'schedule': 60.0,
     },
 }

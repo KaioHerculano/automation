@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-10 px-4">
+    <div class="bg-white shadow sm:rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Apagar Automação</h3>
+            <div class="mt-2 max-w-xl text-sm text-gray-500">
+                <p>Você tem certeza que deseja apagar a automação <strong>{{ automation.name }}</strong>?</p>
+                <p class="mt-2">Essa ação não pode ser desfeita e as notificações irão parar imediatamente.</p>
+            </div>
+            <div class="mt-5 sm:flex sm:flex-row-reverse">
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                        Sim, apagar
+                    </button>
+                </form>
+                <a href="{% url 'automation_list' %}" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
+                    Cancelar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
