@@ -5,3 +5,4 @@ media
 *.exe
 .coverage
 .env
+celerybeat-schedule

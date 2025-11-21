@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # --- 1. Banco de Dados (PostgreSQL) ---
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+
+  # --- 2. Redis (Broker de Mensagens para o Celery) ---
+  redis:
+    image: redis:7
+
+  # --- 3. Aplicação Web (Django) ---
+  web:
+    build: .
+    # Comando para iniciar o servidor
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      # Mapeia a pasta atual (onde está o manage.py) para /app no container
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - POSTGRES_NAME=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST=db
+      - REDIS_HOST=redis
+    depends_on:
+      - db
+      - redis
+
+  # --- 4. Celery Worker (Executa as tarefas de verificação) ---
+  worker:
+    build: .
+    # 'config' é o nome da pasta onde está o settings.py e celery.py
+    command: celery -A app worker -l info
+    volumes:
+      - .:/app
+    environment:
+      - POSTGRES_NAME=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST=db
+      - REDIS_HOST=redis
+    depends_on:
+      - web
+      - redis
+
+  # --- 5. Celery Beat (Agenda as tarefas a cada minuto) ---
+  beat:
+    build: .
+    command: celery -A app beat -l info
+    volumes:
+      - .:/app
+    environment:
+      - POSTGRES_NAME=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST=db
+      - REDIS_HOST=redis
+    depends_on:
+      - web
+      - redis
+
+volumes:
+  postgres_data:
