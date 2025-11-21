@@ -151,3 +151,7 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': 60.0,
     },
 }
+
+LOGIN_REDIRECT_URL = 'automation_list'
+LOGOUT_REDIRECT_URL = 'login'
+LOGIN_URL = 'login'
