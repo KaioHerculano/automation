@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6 px-4">
+    <h1 class="text-3xl font-bold text-gray-900">Minhas Automações</h1>
+    <a href="{% url 'automation_create' %}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow transition duration-150 flex items-center gap-2">
+        <i class="fa-solid fa-plus"></i> Nova Automação
+    </a>
+</div>
+
+{% if automations %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
+        {% for auto in automations %}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
+            <div class="p-5">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                            {% if auto.platform == 'TIKTOK' %} bg-black text-white {% else %} bg-red-100 text-red-800 {% endif %} mb-2">
+                            <i class="fa-brands fa-{{ auto.platform|lower }} mr-1"></i> {{ auto.get_platform_display }}
+                        </span>
+                        <h3 class="text-lg font-semibold text-gray-900 truncate">{{ auto.name }}</h3>
+                        <p class="text-sm text-gray-500 mt-1">{{ auto.channel_identifier }}</p>
+                    </div>
+                    <div class="flex flex-col items-end">
+                        {% if auto.last_status == 'ONLINE' %}
+                            <span class="flex h-3 w-3">
+                                <span class="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-green-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                            </span>
+                        {% else %}
+                            <span class="h-3 w-3 rounded-full bg-gray-300"></span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mt-4 flex items-center justify-between">
+                    <span class="text-xs font-medium {% if auto.is_active %}text-green-600{% else %}text-gray-400{% endif %}">
+                        {% if auto.is_active %} ● Ativo {% else %} ○ Pausado {% endif %}
+                    </span>
+                    <div class="space-x-2">
+                        <a href="{% url 'automation_update' auto.pk %}" class="text-gray-400 hover:text-indigo-600 transition-colors"><i class="fa-solid fa-pen-to-square"></i></a>
+                        <a href="{% url 'automation_delete' auto.pk %}" class="text-gray-400 hover:text-red-600 transition-colors"><i class="fa-solid fa-trash"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-12">
+        <div class="bg-gray-100 rounded-full h-24 w-24 flex items-center justify-center mx-auto mb-4">
+            <i class="fa-solid fa-robot text-4xl text-gray-400"></i>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900">Nenhuma automação criada</h3>
+        <p class="text-gray-500 mt-1 mb-6">Comece criando sua primeira regra de notificação.</p>
+        <a href="{% url 'automation_create' %}" class="text-indigo-600 hover:text-indigo-500 font-medium">Criar agora &rarr;</a>
+    </div>
+{% endif %}
+{% endblock %}

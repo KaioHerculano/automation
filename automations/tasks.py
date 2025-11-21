@@ -4,14 +4,11 @@ from .models import Automation, NotificationLog
 from discord_webhook import DiscordWebhook, DiscordEmbed
 from TikTokLive import TikTokLiveClient
 from asgiref.sync import async_to_sync
-import requests # Usado para o scraping do YouTube
+import requests
 import logging
-import re # Expressões regulares para buscar dados no HTML
+import re
 
-# Configura o logger
 logger = logging.getLogger(__name__)
-
-# --- FUNÇÕES AUXILIARES DE VERIFICAÇÃO ---
 
 def check_tiktok_live(username):
     """
@@ -20,8 +17,6 @@ def check_tiktok_live(username):
     try:
         clean_user = username.replace("@", "")
         client = TikTokLiveClient(unique_id=clean_user)
-        
-        # Converte a chamada assíncrona para síncrona de forma segura
         is_live = async_to_sync(client.is_live)()
         
         logger.info(f"[DEBUG] TikTok Check para '{clean_user}': is_live={is_live}")
@@ -38,8 +33,7 @@ def check_youtube_live(channel_id):
     Vantagem: Sem limite de cota diária.
     """
     url = f"https://www.youtube.com/channel/{channel_id}/live"
-    
-    # Headers para fingir ser um navegador real (evita bloqueios simples)
+
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
         "Accept-Language": "en-US,en;q=0.9",
@@ -47,24 +41,17 @@ def check_youtube_live(channel_id):
 
     try:
         response = requests.get(url, headers=headers, timeout=10, allow_redirects=True)
-        
-        # Se o canal não existir ou estiver banido
+
         if response.status_code != 200:
             logger.warning(f"YouTube retornou status {response.status_code} para o canal {channel_id}")
             return False, "", None
 
         html = response.text
 
-        # Lógica 1: Procurar pela flag "isLive":true no JSON do site
         if '"isLive":true' in html:
             logger.info(f"[DEBUG] YouTube Check '{channel_id}': LIVE DETECTADA! (isLive:true found)")
-            
-            # Tentar extrair o título (busca simples por regex no título da página ou metadados)
-            # O título geralmente está em <title>Titulo - YouTube</title> ou tags og:title
             title_search = re.search(r'<title>(.*?)- YouTube</title>', html)
             title = title_search.group(1).strip() if title_search else "Live no YouTube"
-            
-            # Tentar pegar a thumbnail
             thumb_search = re.search(r'"thumbnailUrl":["\'](.*?)["\']', html)
             thumbnail = thumb_search.group(1) if thumb_search else None
             
@@ -77,8 +64,6 @@ def check_youtube_live(channel_id):
         logger.error(f"Erro ao fazer scraping do YouTube para '{channel_id}': {e}")
         return False, "", None
 
-# --- FUNÇÃO DE ENVIO DO DISCORD ---
-
 def send_discord_alert(automation, is_starting, title, thumbnail_url):
     if not automation.discord_webhook_url:
         return False, "URL do Webhook ausente"
@@ -86,11 +71,11 @@ def send_discord_alert(automation, is_starting, title, thumbnail_url):
     webhook = DiscordWebhook(url=automation.discord_webhook_url)
     
     if is_starting:
-        embed_color = '00FF00' # Verde
+        embed_color = '00FF00'
         status_msg = "🔴 LIVE INICIADA!"
         desc = f"A live **{title}** começou no {automation.get_platform_display()}!"
     else:
-        embed_color = '808080' # Cinza
+        embed_color = '808080'
         status_msg = "⚫ LIVE ENCERRADA!"
         desc = f"A live no {automation.get_platform_display()} terminou. Obrigado a todos!"
 
@@ -116,8 +101,6 @@ def send_discord_alert(automation, is_starting, title, thumbnail_url):
         logger.error(f"Falha no Discord: {e}")
         return False, str(e)
 
-# --- TAREFAS DO CELERY ---
-
 @shared_task
 def process_automation(automation_id):
     try:
@@ -136,9 +119,6 @@ def process_automation(automation_id):
 
     current_status = 'ONLINE' if is_live else 'OFFLINE'
     previous_status = automation.last_status
-    
-    # Log de monitoramento
-    # logger.info(f"Automação '{automation.name}': {previous_status} -> {current_status}")
 
     if current_status == 'ONLINE' and previous_status != 'ONLINE':
         success, msg = send_discord_alert(automation, True, title, thumbnail)

@@ -2,13 +2,14 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from .models import Automation
+from .forms import AutomationForm
 
 class AutomationListView(LoginRequiredMixin, ListView):
     """
     Lista todas as automações do usuário logado.
     """
     model = Automation
-    template_name = 'core/automation_list.html'
+    template_name = 'automation_list.html'
     context_object_name = 'automations'
 
     def get_queryset(self):
@@ -21,9 +22,8 @@ class AutomationCreateView(LoginRequiredMixin, CreateView):
     Formulário para criar uma nova automação.
     """
     model = Automation
-    template_name = 'core/automation_form.html'
-    # Campos que o usuário pode preencher (o 'user' e 'last_status' são automáticos)
-    fields = ['name', 'platform', 'channel_identifier', 'discord_webhook_url', 'is_active']
+    form_class = AutomationForm
+    template_name = 'automation_create.html'
     success_url = reverse_lazy('automation_list')
 
     def form_valid(self, form):
@@ -37,8 +37,8 @@ class AutomationUpdateView(LoginRequiredMixin, UpdateView):
     Formulário para editar uma automação existente.
     """
     model = Automation
-    template_name = 'core/automation_form.html'
-    fields = ['name', 'platform', 'channel_identifier', 'discord_webhook_url', 'is_active']
+    form_class = AutomationForm
+    template_name = 'automation_update.html'
     success_url = reverse_lazy('automation_list')
 
     def get_queryset(self):
@@ -51,7 +51,7 @@ class AutomationDeleteView(LoginRequiredMixin, DeleteView):
     Página de confirmação para deletar uma automação.
     """
     model = Automation
-    template_name = 'core/automation_confirm_delete.html'
+    template_name = 'automation_confirm_delete.html'
     success_url = reverse_lazy('automation_list')
     context_object_name = 'automation'
 
