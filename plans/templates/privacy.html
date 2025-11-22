@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-12">
+    
+    <div class="bg-white shadow-lg rounded-2xl overflow-hidden border border-gray-100">
+        <!-- Cabeçalho da Página -->
+        <div class="bg-indigo-600 px-8 py-10 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">Política de Privacidade</h1>
+            <p class="text-indigo-100">Última atualização: {% now "d/m/Y" %}</p>
+        </div>
+
+        <!-- Conteúdo da Política -->
+        <div class="p-8 md:p-12 prose prose-indigo max-w-none text-gray-600">
+            
+            <p class="mb-6 text-lg">
+                No <strong>LiveSync</strong>, levamos a sua privacidade a sério. Esta política descreve como coletamos, usamos e protegemos as suas informações pessoais ao utilizar a nossa plataforma de automação.
+            </p>
+
+            <h3 class="text-xl font-bold text-gray-900 mb-4">1. Informações que Coletamos</h3>
+            <p class="mb-4">Para fornecer o nosso serviço, precisamos coletar os seguintes dados:</p>
+            <ul class="list-disc pl-5 mb-6 space-y-2">
+                <li><strong>Dados da Conta:</strong> Nome de usuário, endereço de email e senha (armazenada de forma criptografada).</li>
+                <li><strong>Dados de Automação:</strong> Identificadores públicos de canais (TikTok/YouTube) que você deseja monitorar.</li>
+                <li><strong>Dados de Integração:</strong> URLs de Webhook do Discord para envio de notificações.</li>
+                <li><strong>Logs de Uso:</strong> Registros automáticos de quando as notificações são enviadas (sucesso ou falha) para fins de depuração.</li>
+            </ul>
+
+            <h3 class="text-xl font-bold text-gray-900 mb-4">2. Como Usamos as Suas Informações</h3>
+            <p class="mb-6">
+                Utilizamos os seus dados exclusivamente para:
+            </p>
+            <ul class="list-disc pl-5 mb-6 space-y-2">
+                <li>Verificar periodicamente o status (online/offline) dos canais que você cadastrou.</li>
+                <li>Enviar mensagens automatizadas para o seu servidor do Discord através dos Webhooks fornecidos.</li>
+                <li>Gerenciar o acesso à sua conta e processar a sua assinatura (se aplicável).</li>
+                <li>Melhorar a estabilidade e segurança da plataforma.</li>
+            </ul>
+
+            <h3 class="text-xl font-bold text-gray-900 mb-4">3. Compartilhamento de Dados</h3>
+            <p class="mb-6">
+                <strong>Nós não vendemos os seus dados pessoais.</strong> As informações são compartilhadas apenas nas seguintes circunstâncias necessárias para o funcionamento do serviço:
+            </p>
+            <ul class="list-disc pl-5 mb-6 space-y-2">
+                <li><strong>APIs de Terceiros:</strong> Consultamos APIs públicas (YouTube, TikTok) usando os identificadores de canal que você forneceu.</li>
+                <li><strong>Discord:</strong> Enviamos dados de notificação para os servidores do Discord através dos Webhooks que você configurou.</li>
+            </ul>
+
+            <h3 class="text-xl font-bold text-gray-900 mb-4">4. Segurança dos Dados</h3>
+            <p class="mb-6">
+                Implementamos medidas de segurança robustas, incluindo criptografia de senhas e comunicação segura (HTTPS), para proteger as suas informações contra acesso não autorizado, alteração ou destruição.
+            </p>
+
+            <h3 class="text-xl font-bold text-gray-900 mb-4">5. Seus Direitos</h3>
+            <p class="mb-6">
+                Você tem o direito de acessar, corrigir ou excluir as suas informações pessoais a qualquer momento. Você pode excluir suas automações diretamente pelo painel ou solicitar a exclusão completa da sua conta entrando em contato com o suporte.
+            </p>
+
+            <h3 class="text-xl font-bold text-gray-900 mb-4">6. Contato</h3>
+            <p class="mb-6">
+                Se tiver dúvidas sobre esta Política de Privacidade, entre em contato conosco pelo WhatsApp ou email de suporte.
+            </p>
+
+            <hr class="my-8 border-gray-200">
+
+            <div class="flex justify-center">
+                <a href="{% url 'dashboard' %}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 transition-colors">
+                    Voltar para o Painel
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

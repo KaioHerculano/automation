@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4">
+    
+    <!-- Cabeçalho com Saudação e Botão Rápido -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Visão Geral</h1>
+            <p class="text-gray-500">Bem-vindo de volta, {{ user.username }}!</p>
+        </div>
+        <a href="{% url 'automation_create' %}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg shadow transition duration-150 flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i> Nova Automação
+        </a>
+    </div>
+
+    <!-- Grid de Estatísticas (KPIs) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        
+        <!-- Card 1: Automações Ativas -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center">
+            <div class="p-4 rounded-full bg-blue-50 text-blue-600 mr-4">
+                <i class="fa-solid fa-robot text-2xl"></i>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500 font-medium uppercase">Automações Ativas</p>
+                <p class="text-3xl font-bold text-gray-900">{{ active_automations }} <span class="text-sm text-gray-400 font-normal"></span></p>
+            </div>
+        </div>
+
+        <!-- Card 2: Notificações Enviadas -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center">
+            <div class="p-4 rounded-full bg-green-50 text-green-600 mr-4">
+                <i class="fa-solid fa-bell text-2xl"></i>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500 font-medium uppercase">Notificações Enviadas</p>
+                <p class="text-3xl font-bold text-gray-900">{{ total_notifications }}</p>
+            </div>
+        </div>
+
+        <!-- Card 3: Plano (Atalho) -->
+        <div class="bg-indigo-600 rounded-xl shadow-sm border border-indigo-500 p-6 flex items-center text-white relative overflow-hidden">
+            <div class="relative z-10 w-full">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm text-indigo-200 font-medium uppercase">Seu Plano</p>
+                        {% if user.profile.plan %}
+                            <p class="text-3xl font-bold">{{ user.profile.plan.name }}</p>
+                        {% else %}
+                            <p class="text-3xl font-bold">Grátis</p>
+                        {% endif %}
+                    </div>
+                    <a href="{% url 'user_profile' %}" class="text-indigo-100 hover:text-white text-sm underline">Ver detalhes</a>
+                </div>
+            </div>
+            <!-- Ícone de fundo decorativo -->
+            <i class="fa-solid fa-rocket absolute -right-4 -bottom-4 text-8xl text-indigo-500 opacity-30"></i>
+        </div>
+    </div>
+
+    <!-- Seção de Atividade Recente -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-gray-800">Atividade Recente</h3>
+            <a href="{% url 'automation_list' %}" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">Ver todas automações &rarr;</a>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-gray-600">
+                <thead class="bg-gray-50 text-xs uppercase text-gray-500">
+                    <tr>
+                        <th class="px-6 py-3 font-semibold">Status</th>
+                        <th class="px-6 py-3 font-semibold">Automação</th>
+                        <th class="px-6 py-3 font-semibold">Detalhes</th>
+                        <th class="px-6 py-3 font-semibold">Quando</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    {% for log in recent_logs %}
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4">
+                            {% if log.status == 'SUCCESS' %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <i class="fa-solid fa-check mr-1"></i> Sucesso
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    <i class="fa-solid fa-xmark mr-1"></i> Falha
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 font-medium text-gray-900">
+                            {{ log.automation.name }}
+                        </td>
+                        <td class="px-6 py-4 truncate max-w-xs" title="{{ log.details }}">
+                            {{ log.details }}
+                        </td>
+                        <td class="px-6 py-4 text-gray-500">
+                            {{ log.timestamp|date:"d/m/Y H:i" }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-8 text-center text-gray-400">
+                            Nenhuma atividade registrada recentemente.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

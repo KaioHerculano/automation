@@ -1,0 +1,39 @@
+<nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            
+            <!-- Logo -->
+            <div class="flex items-center">
+                <a href="{% url 'dashboard' %}" class="text-2xl font-bold text-indigo-600 flex items-center gap-2 hover:opacity-80 transition-opacity">
+                    <i class="fa-solid fa-bolt"></i> LiveSync
+                </a>
+            </div>
+
+            <!-- Área do Usuário -->
+            <div class="flex items-center gap-2">
+                
+                <!-- LINK DO PERFIL -->
+                <a href="{% url 'user_profile' %}" class="flex items-center gap-2 group p-1 pr-3 rounded-full hover:bg-gray-50 transition-colors" title="Ver meu perfil">
+                    <div class="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center text-xs font-bold group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                        {{ user.username|make_list|first|upper }}
+                    </div>
+                    <span class="text-sm font-medium text-gray-600 group-hover:text-indigo-600 transition-colors">
+                        {{ user.username }}
+                    </span>
+                </a>
+
+                <div class="h-6 w-px bg-gray-200 mx-2"></div>
+
+                <!-- Botão de Logout -->
+                <form action="{% url 'logout' %}" method="post" class="flex items-center">
+                    {% csrf_token %}
+                    <button type="submit" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-500 rounded-md hover:bg-red-50 hover:text-red-700 transition-colors" title="Sair do sistema">
+                        <span>Sair</span>
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+</nav>

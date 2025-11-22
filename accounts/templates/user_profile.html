@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4">
+    
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">Minha Conta</h1>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Coluna da Esquerda: Dados do Utilizador -->
+        <div class="lg:col-span-1">
+            <div class="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
+                <div class="p-6 text-center border-b border-gray-100">
+                    <!-- Avatar com a inicial -->
+                    <div class="w-24 h-24 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-4xl font-bold mx-auto mb-4 border-4 border-white shadow-sm">
+                        {{ user.username|make_list|first|upper }}
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-900">{{ user.username }}</h2>
+                    <p class="text-gray-500 text-sm break-all">{{ user.email }}</p>
+                </div>
+                <div class="p-6 bg-gray-50/50">
+                    <div class="text-xs text-gray-400 uppercase font-bold mb-4 tracking-wider">Detalhes</div>
+                    
+                    <div class="flex justify-between items-center py-3 border-b border-gray-200 last:border-0">
+                        <span class="text-gray-600 text-sm">Membro desde</span>
+                        <span class="text-gray-900 text-sm font-medium">{{ user.date_joined|date:"d/m/Y" }}</span>
+                    </div>
+                    <div class="flex justify-between items-center py-3">
+                        <span class="text-gray-600 text-sm">Último acesso</span>
+                        <span class="text-gray-900 text-sm font-medium">{{ user.last_login|date:"d/m/Y" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna da Direita: Plano e Uso -->
+        <div class="lg:col-span-2">
+            <div class="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden h-full flex flex-col">
+                <div class="px-8 py-6 bg-indigo-600 flex justify-between items-center">
+                    <div>
+                        <p class="text-indigo-100 text-sm font-medium mb-1">Plano Atual</p>
+                        <h3 class="text-2xl font-bold text-white flex items-center gap-2">
+                            {{ plan_name }}
+                            {% if plan_name == 'Pro' %}
+                                <i class="fa-solid fa-crown text-yellow-400 text-lg"></i>
+                            {% endif %}
+                        </h3>
+                    </div>
+                    <div class="text-right">
+                        <span class="block text-3xl font-bold text-white">R$ {{ price }}</span>
+                        <span class="text-indigo-200 text-xs">/mês</span>
+                    </div>
+                </div>
+                
+                <div class="p-8 flex-1 flex flex-col">
+                    <!-- Barra de Uso -->
+                    <div class="mb-8">
+                        <div class="flex justify-between items-end mb-2">
+                            <span class="text-sm font-medium text-gray-700">Uso de Automações</span>
+                            <span class="text-sm font-bold text-indigo-600">{{ current_count }} / {{ limit }}</span>
+                        </div>
+                        
+                        <div class="w-full bg-gray-100 rounded-full h-4 overflow-hidden shadow-inner">
+                            <!-- Barra de progresso com largura dinâmica -->
+                            <div class="bg-indigo-500 h-full rounded-full transition-all duration-1000 ease-out relative" 
+                                 style="width: {{ usage_percent }}%;">
+                                {% if usage_percent > 90 %}
+                                    <span class="absolute right-0 top-0 bottom-0 bg-red-500 w-full animate-pulse opacity-20"></span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <p class="text-xs text-gray-500 mt-2">
+                            Você está a usar {{ usage_percent }}% da capacidade do seu plano.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                        <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
+                            <div class="text-gray-500 text-xs uppercase font-bold mb-1">Status</div>
+                            
+                            <!-- Lógica visual de status (Ativo/Expirado) -->
+                            {% if user.profile.is_plan_active %}
+                                <div class="text-green-600 font-bold flex items-center gap-2">
+                                    <span class="w-2 h-2 bg-green-500 rounded-full"></span> Ativo
+                                </div>
+                            {% else %}
+                                <div class="text-red-600 font-bold flex items-center gap-2">
+                                    <span class="w-2 h-2 bg-red-500 rounded-full"></span> Expirado
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
+                            <div class="text-gray-500 text-xs uppercase font-bold mb-1">Vencimento</div>
+                            <div class="text-gray-900 font-bold">
+                                {% if user.profile.plan_expires_at %}
+                                    {{ user.profile.plan_expires_at|date:"d/m/Y" }}
+                                {% else %}
+                                    Vitalício
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto pt-6 border-t border-gray-100 flex justify-end gap-3 items-center">
+                        
+                        <!-- Botão de Voltar (Substitui o Sair) -->
+                        <a href="{% url 'automation_list' %}" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 text-gray-600 font-medium text-sm rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-gray-900 transition-colors">
+                            <i class="fa-solid fa-arrow-left text-sm"></i>
+                            <span>Voltar para Automações</span>
+                        </a>
+
+                        <!-- Botão de Upgrade -->
+                        {% if plan_name != 'Pro' %}
+                        <a href="{% url 'upgrade_page' %}" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-bold shadow-sm transition-transform hover:scale-105 flex items-center gap-2">
+                            <i class="fa-solid fa-rocket"></i> Fazer Upgrade
+                        </a>
+                        {% else %}
+                        <button class="bg-gray-100 text-gray-400 px-6 py-2 rounded-lg font-bold cursor-not-allowed" disabled>
+                            Plano Máximo
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
