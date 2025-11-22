@@ -2,6 +2,31 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class Plan(models.Model):
+    name = models.CharField(max_length=50, verbose_name="Nome do Plano")
+    max_automations = models.IntegerField(default=1, verbose_name="Limite de Automações")
+    price = models.DecimalField(max_digits=6, decimal_places=2, default=0.00, verbose_name="Preço Mensal")
+
+    def __str__(self):
+        return f"{self.name} ({self.max_automations} automações)"
+
+    class Meta:
+        verbose_name = "Plano"
+        verbose_name_plural = "Planos"
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    plan = models.ForeignKey(Plan, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Plano Atual")
+
+    def __str__(self):
+        return f"Perfil de {self.user.username} - {self.plan.name if self.plan else 'Sem Plano'}"
+
+    class Meta:
+        verbose_name = "Perfil de Usuário"
+        verbose_name_plural = "Perfis de Usuários"
+
+
 class Automation(models.Model):
 
 
