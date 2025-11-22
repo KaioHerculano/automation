@@ -1,52 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils import timezone # Importante para lidar com datas
 
-# --- MODELOS DE PLANOS E PERFIL ---
-
-class Plan(models.Model):
-    name = models.CharField(max_length=50, verbose_name="Nome do Plano")
-    max_automations = models.IntegerField(default=1, verbose_name="Limite de Automações")
-    price = models.DecimalField(max_digits=6, decimal_places=2, default=0.00, verbose_name="Preço Mensal")
-
-    def __str__(self):
-        return f"{self.name} ({self.max_automations} automações)"
-
-    class Meta:
-        verbose_name = "Plano"
-        verbose_name_plural = "Planos"
-
-
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    plan = models.ForeignKey(Plan, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Plano Atual")
-    
-    # Campo de expiração
-    plan_expires_at = models.DateTimeField(
-        null=True, 
-        blank=True, 
-        verbose_name="Expiração do Plano"
-    )
-
-    def is_plan_active(self):
-        """Verifica se o plano é válido (existe e não expirou)"""
-        if not self.plan:
-            return False
-        # Se não tem data de expiração, assumimos que é vitalício (ou o plano Free)
-        if not self.plan_expires_at:
-            return True
-        # Verifica se a data de expiração é futura
-        return self.plan_expires_at > timezone.now()
-
-    def __str__(self):
-        return f"Perfil de {self.user.username}"
-
-    class Meta:
-        verbose_name = "Perfil de Usuário"
-        verbose_name_plural = "Perfis de Usuários"
-
-
-# --- MODELOS DE AUTOMAÇÃO ---
 
 class Automation(models.Model):
     """
@@ -62,7 +16,6 @@ class Automation(models.Model):
         OFFLINE = 'OFFLINE', 'Offline'
         UNKNOWN = 'UNKNOWN', 'Desconhecido'
 
-    # Campos Principais (em Inglês para padronização)
     name = models.CharField(max_length=100, verbose_name="Nome da Automação")
     
     user = models.ForeignKey(
