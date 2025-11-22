@@ -1,0 +1,27 @@
+<footer class="bg-white border-t border-gray-200 mt-auto">
+    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="md:flex md:items-center md:justify-between">
+            
+            <!-- Lado Esquerdo: Copyright -->
+            <div class="flex justify-center md:justify-start">
+                <p class="text-sm text-gray-500">
+                    &copy; {% now "Y" %} <span class="font-bold text-indigo-600">LiveSync</span>. Todos os direitos reservados.
+                </p>
+            </div>
+
+            <!-- Lado Direito: Links Úteis -->
+            <div class="mt-4 flex justify-center md:mt-0 md:ml-4 space-x-6">
+                <a href="{% url 'terms' %}" class="text-sm text-gray-500 hover:text-indigo-600 transition-colors">
+                    Termos de Uso
+                </a>
+                <a href="{% url 'privacy' %}" class="text-sm text-gray-500 hover:text-indigo-600 transition-colors">
+                    Privacidade
+                </a>
+                <a href="https://wa.me/5565993361717" target="_blank" class="text-sm text-gray-500 hover:text-green-600 transition-colors flex items-center gap-1">
+                    <i class="fa-brands fa-whatsapp"></i> Suporte
+                </a>
+            </div>
+            
+        </div>
+    </div>
+</footer>

@@ -51,9 +51,14 @@ class PlanAdmin(admin.ModelAdmin):
 # --- NOVO: CONFIGURAÇÃO DE PERFIS DE USUÁRIO ---
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'plan')
+    # Adicionei 'status_assinatura' para ver fácil se tá vencido
+    list_display = ('user', 'plan', 'plan_expires_at', 'status_assinatura')
     list_filter = ('plan',)
     search_fields = ('user__username', 'user__email')
-    # raw_id_fields ajuda se você tiver milhares de usuários, 
-    # pois cria uma caixa de busca em vez de um dropdown gigante.
     raw_id_fields = ('user',)
+    
+    def status_assinatura(self, obj):
+        if obj.is_plan_active():
+            return "✅ Ativo"
+        return "❌ Expirado/Inativo"
+    status_assinatura.short_description = "Status da Assinatura"
